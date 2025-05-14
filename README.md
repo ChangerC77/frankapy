@@ -102,8 +102,32 @@ Successfully installed autolab_core-1.1.1 colorlog-6.9.0 dill-0.3.9 empy-3.3.4 f
    ```
    
 ### 3. To compile the catkin_ws use the following script:
++ bash
+```
+source ~/Franka/frankapy/catkin_ws/devel/setup.bash --extend
+```
++ zsh
+```
+source ~/Franka/frankapy/catkin_ws/devel/setup.zsh --extend
+```
+compile
 ```bash
 ./$HOME/Franka/frankapy/bash_scripts/make_catkin.sh
+```
+#### bug
+```
+/home/ubuntu/Franka/frankapy/bash_scripts/make_catkin.sh: 第 1 行： cd: $'catkin_ws\r': 没有那个文件或目录
+usage: catkin [-h] [-a] [--test-colors] [--version]
+              [--force-color | --no-color]
+              [build | clean | config | create | env | init | list | locate | profile | test]
+              ...
+ 
+' provided.own verb 'build
+```
+#### solution
+```
+sudo apt-get install dos2unix
+dos2unix $HOME/Franka/frankapy/bash_scripts/make_catkin.sh
 ```
 
 ### 4. To allow asynchronous gripper commands, 
@@ -172,7 +196,16 @@ bash ./$HOME/Franka/frankapy/bash_scripts/start_control_pc.sh -i localhost
 <img src='img/7.png'>
 
 弹出4个窗口且没有报错则证明运行成功
-
+#### bug
+```
+/home/ubuntu/Franka/frankapy/bash_scripts/start_control_pc.sh: 行 2: $'\r'：未找到命令
+/home/ubuntu/Franka/frankapy/bash_scripts/start_control_pc.sh: 行 3: 未预期的符号“$'{\r'”附近有语法错误
+'home/ubuntu/Franka/frankapy/bash_scripts/start_control_pc.sh: 行 3: `die () {
+```
+#### solution
+```
+dos2unix $HOME/Franka/frankapy/bash_scripts/start_control_pc.sh
+```
 ### 4. set the environment
 + zsh
 ```
@@ -198,6 +231,29 @@ WARNING:root:autolab_core not installed as catkin package, RigidTransform ros me
 Starting robot
 Reset with joints
 Opening Grippers
+```
+#### bug
+```
+WARNING:root:autolab_core not installed as catkin package, RigidTransform ros methods will be unavailable
+Traceback (most recent call last):
+  File "/home/ubuntu/Franka/frankapy/scripts/reset_arm.py", line 2, in <module>
+    from frankapy import FrankaArm
+  File "/home/ubuntu/Franka/frankapy/frankapy/__init__.py", line 1, in <module>
+    from .franka_arm import FrankaArm
+  File "/home/ubuntu/Franka/frankapy/frankapy/franka_arm.py", line 23, in <module>
+    from .skill_list import *
+  File "/home/ubuntu/Franka/frankapy/frankapy/skill_list.py", line 10, in <module>
+    from .proto import *
+  File "/home/ubuntu/Franka/frankapy/frankapy/proto/__init__.py", line 1, in <module>
+    from .feedback_controller_params_msg_pb2 import *
+  File "/home/ubuntu/Franka/frankapy/frankapy/proto/feedback_controller_params_msg_pb2.py", line 5, in <module>
+    from google.protobuf.internal import builder as _builder
+ImportError: cannot import name 'builder'
+```
+#### solution
+`protobuf`版本过低，卸载后下载新的
+```
+pip install protobuf==4.21.0
 ```
 ### 3. teach mode
 ```bash
